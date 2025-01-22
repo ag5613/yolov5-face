@@ -1,7 +1,7 @@
 # Dataset paths
-train: /content/yolov5-face/training_dataset/train
-val: /content/yolov5-face/training_dataset/val
-test: /content/yolov5-face/training_dataset/test    # Path to test images (optional)
+train: ./training_dataset/train
+val: ./training_dataset/val
+test: ./training_dataset/test    # Path to test images (optional)
 
 # Parameters
 nc: 1  # Number of classes (1 in this case for 'person')
