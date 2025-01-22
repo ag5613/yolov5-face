@@ -1,0 +1,11 @@
+# Dataset paths
+train: /content/yolov5-face/training_data/train
+val: /content/yolov5-face/training_data/val
+test: /content/yolov5-face/training_data/test    # Path to test images (optional)
+
+# Parameters
+nc: 1  # Number of classes (1 in this case for 'person')
+names: ["person"]  # Class names
+# kpt_shape: [4, 3]  # 12 keypoints, each with x, y, and confidence
+
+

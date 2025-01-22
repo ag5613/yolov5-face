@@ -115,8 +115,8 @@ class LandmarksLoss(nn.Module):
 
 def compute_loss(p, targets, model):  # predictions, targets, model
     device = targets.device
-    lcls, lbox, lobj, lmark = torch.zeros(1, device=device), torch.zeros(1, device=device), torch.zeros(1, device=device), torch.zeros(1, device=device)
-    tcls, tbox, indices, anchors, tlandmarks, lmks_mask = build_targets(p, targets, model)  # targets
+    lcls, lbox, lobj, lbox1 = torch.zeros(1, device=device), torch.zeros(1, device=device), torch.zeros(1, device=device), torch.zeros(1, device=device)
+    tcls, tbox, indices, anchors, tbox1 = build_targets(p, targets, model)  # targets
     h = model.hyp  # hyperparameters
 
     # Define criteria
@@ -151,7 +151,11 @@ def compute_loss(p, targets, model):  # predictions, targets, model
             pwh = (ps[:, 2:4].sigmoid() * 2) ** 2 * anchors[i]
             pbox = torch.cat((pxy, pwh), 1)  # predicted box
             iou = bbox_iou(pbox.T, tbox[i], x1y1x2y2=False, CIoU=True)  # iou(prediction, target)
-            lbox += (1.0 - iou).mean()  # iou loss
+            pxy1 = ps[:, 5:7].sigmoid() * 2. - 0.5
+            pwh1 = (ps[:, 7:9].sigmoid() * 2) ** 2 * anchors[i]
+            pbox1 = torch.cat((pxy1, pwh1), 1)  # predicted box
+            iou1 = bbox_iou(pbox1.T, tbox1[i], x1y1x2y2=False, CIoU=True)  # iou(prediction, target)
+            lbox1 += (1.0 - iou1).mean()  # iou loss
 
             # Objectness
             tobj[b, a, gj, gi] = (1.0 - model.gr) + model.gr * iou.detach().clamp(0).type(tobj.dtype)  # iou ratio
@@ -168,15 +172,15 @@ def compute_loss(p, targets, model):  # predictions, targets, model
 
             #landmarks loss
             #plandmarks = ps[:,5:15].sigmoid() * 8. - 4.
-            plandmarks = ps[:,5:15]
+            # plandmarks = ps[:,5:15]
 
-            plandmarks[:, 0:2] = plandmarks[:, 0:2] * anchors[i]
-            plandmarks[:, 2:4] = plandmarks[:, 2:4] * anchors[i]
-            plandmarks[:, 4:6] = plandmarks[:, 4:6] * anchors[i]
-            plandmarks[:, 6:8] = plandmarks[:, 6:8] * anchors[i]
-            plandmarks[:, 8:10] = plandmarks[:,8:10] * anchors[i]
+            # plandmarks[:, 0:2] = plandmarks[:, 0:2] * anchors[i]
+            # plandmarks[:, 2:4] = plandmarks[:, 2:4] * anchors[i]
+            # plandmarks[:, 4:6] = plandmarks[:, 4:6] * anchors[i]
+            # plandmarks[:, 6:8] = plandmarks[:, 6:8] * anchors[i]
+            # plandmarks[:, 8:10] = plandmarks[:,8:10] * anchors[i]
 
-            lmark += landmarks_loss(plandmarks, tlandmarks[i], lmks_mask[i])
+            # lmark += landmarks_loss(plandmarks, tlandmarks[i], lmks_mask[i])
 
 
         lobj += BCEobj(pi[..., 4], tobj) * balance[i]  # obj loss
@@ -185,19 +189,20 @@ def compute_loss(p, targets, model):  # predictions, targets, model
     lbox *= h['box'] * s
     lobj *= h['obj'] * s * (1.4 if no == 4 else 1.)
     lcls *= h['cls'] * s
-    lmark *= h['landmark'] * s
+    # lmark *= h['landmark'] * s
 
     bs = tobj.shape[0]  # batch size
 
-    loss = lbox + lobj + lcls + lmark
-    return loss * bs, torch.cat((lbox, lobj, lcls, lmark, loss)).detach()
+    loss = lbox + lobj + lcls #+ lmark
+    return loss * bs, torch.cat((lbox, lbox1, lobj, lcls, loss)).detach()
 
 
 def build_targets(p, targets, model):
     # Build targets for compute_loss(), input targets(image,class,x,y,w,h)
     det = model.module.model[-1] if is_parallel(model) else model.model[-1]  # Detect() module
     na, nt = det.na, targets.shape[0]  # number of anchors, targets
-    tcls, tbox, indices, anch, landmarks, lmks_mask = [], [], [], [], [], []
+    tcls, tbox, indices, anch, tbox1 = [], [], [], [], []
+    tbox1 = []
     #gain = torch.ones(7, device=targets.device)  # normalized to gridspace gain
     gain = torch.ones(17, device=targets.device)
     ai = torch.arange(na, device=targets.device).float().view(na, 1).repeat(1, nt)  # same as .repeat_interleave(nt)
@@ -212,8 +217,8 @@ def build_targets(p, targets, model):
     for i in range(det.nl):
         anchors = det.anchors[i]
         gain[2:6] = torch.tensor(p[i].shape)[[3, 2, 3, 2]]  # xyxy gain
-        #landmarks 10
-        gain[6:16] = torch.tensor(p[i].shape)[[3, 2, 3, 2, 3, 2, 3, 2, 3, 2]]  # xyxy gain
+        # #other bbox
+        gain[6:10] = torch.tensor(p[i].shape)[[3, 2, 3, 2]]  # xyxy gain
 
         # Match targets to anchors
         t = targets * gain
@@ -243,26 +248,33 @@ def build_targets(p, targets, model):
         gij = (gxy - offsets).long()
         gi, gj = gij.T  # grid xy indices
 
+        gxy1 = t[:, 6:8]  # grid xy
+        gwh1 = t[:, 8:10]  # grid wh
+        gij1 = (gxy1 - offsets).long()
+        gi1, gj1 = gij1.T  # grid xy indices
+
         # Append
-        a = t[:, 16].long()  # anchor indices
+        a = t[:, 10].long()  # anchor indices
         indices.append((b, a, gj.clamp_(0, gain[3] - 1), gi.clamp_(0, gain[2] - 1)))  # image, anchor, grid indices
         tbox.append(torch.cat((gxy - gij, gwh), 1))  # box
+        tbox1.append(torch.cat((gxy1 - gij1, gwh1), 1))  # box 2
+
         anch.append(anchors[a])  # anchors
         tcls.append(c)  # class
 
         #landmarks
-        lks = t[:,6:16]
+        # lks = t[:,6:16]
         #lks_mask = lks > 0
         #lks_mask = lks_mask.float()
-        lks_mask = torch.where(lks < 0, torch.full_like(lks, 0.), torch.full_like(lks, 1.0))
+        # lks_mask = torch.where(lks < 0, torch.full_like(lks, 0.), torch.full_like(lks, 1.0))
 
         #应该是关键点的坐标除以anch的宽高才对，便于模型学习。使用gwh会导致不同关键点的编码不同，没有统一的参考标准
 
-        lks[:, [0, 1]] = (lks[:, [0, 1]] - gij)
-        lks[:, [2, 3]] = (lks[:, [2, 3]] - gij)
-        lks[:, [4, 5]] = (lks[:, [4, 5]] - gij)
-        lks[:, [6, 7]] = (lks[:, [6, 7]] - gij)
-        lks[:, [8, 9]] = (lks[:, [8, 9]] - gij)
+        # lks[:, [0, 1]] = (lks[:, [0, 1]] - gij)
+        # lks[:, [2, 3]] = (lks[:, [2, 3]] - gij)
+        # lks[:, [4, 5]] = (lks[:, [4, 5]] - gij)
+        # lks[:, [6, 7]] = (lks[:, [6, 7]] - gij)
+        # lks[:, [8, 9]] = (lks[:, [8, 9]] - gij)
 
         '''
         #anch_w = torch.ones(5, device=targets.device).fill_(anchors[0][0])
@@ -296,9 +308,9 @@ def build_targets(p, targets, model):
         lks_mask_new[:, 8] = lks_mask_new[:, 8] * lks_mask_new[:, 9]
         lks_mask_new[:, 9] = lks_mask_new[:, 8] * lks_mask_new[:, 9]
         '''
-        lks_mask_new = lks_mask
-        lmks_mask.append(lks_mask_new)
-        landmarks.append(lks)
+        # lks_mask_new = lks_mask
+        # lmks_mask.append(lks_mask_new)
+        # landmarks.append(lks)
         #print('lks: ',  lks.size())
 
-    return tcls, tbox, indices, anch, landmarks, lmks_mask
+    return tcls, tbox, indices, anch, tbox1
