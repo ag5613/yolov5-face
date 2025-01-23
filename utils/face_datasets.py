@@ -304,28 +304,32 @@ class LoadFaceImagesAndLabels(Dataset):  # for training/testing
                 labels[:, 2] = ratio[1] * h * (x[:, 2] - x[:, 4] / 2) + pad[1]  # pad height
                 labels[:, 3] = ratio[0] * w * (x[:, 1] + x[:, 3] / 2) + pad[0]
                 labels[:, 4] = ratio[1] * h * (x[:, 2] + x[:, 4] / 2) + pad[1]
+                labels[:, 5] = ratio[0] * w * (x[:, 1] - x[:, 3] / 2) + pad[0]  # pad width
+                labels[:, 6] = ratio[1] * h * (x[:, 2] - x[:, 4] / 2) + pad[1]  # pad height
+                labels[:, 7] = ratio[0] * w * (x[:, 1] + x[:, 3] / 2) + pad[0]
+                labels[:, 8] = ratio[1] * h * (x[:, 2] + x[:, 4] / 2) + pad[1]
 
                 #labels[:, 5] = ratio[0] * w * x[:, 5] + pad[0]  # pad width
-                labels[:, 5] = np.array(x[:, 5] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 5] + pad[0]) + (
-                    np.array(x[:, 5] > 0, dtype=np.int32) - 1)
-                labels[:, 6] = np.array(x[:, 6] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 6] + pad[1]) + (
-                    np.array(x[:, 6] > 0, dtype=np.int32) - 1)
-                labels[:, 7] = np.array(x[:, 7] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 7] + pad[0]) + (
-                    np.array(x[:, 7] > 0, dtype=np.int32) - 1)
-                labels[:, 8] = np.array(x[:, 8] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 8] + pad[1]) + (
-                    np.array(x[:, 8] > 0, dtype=np.int32) - 1)
-                labels[:, 9] = np.array(x[:, 5] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 9] + pad[0]) + (
-                    np.array(x[:, 9] > 0, dtype=np.int32) - 1)
-                labels[:, 10] = np.array(x[:, 5] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 10] + pad[1]) + (
-                    np.array(x[:, 10] > 0, dtype=np.int32) - 1)
-                labels[:, 11] = np.array(x[:, 11] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 11] + pad[0]) + (
-                    np.array(x[:, 11] > 0, dtype=np.int32) - 1)
-                labels[:, 12] = np.array(x[:, 12] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 12] + pad[1]) + (
-                    np.array(x[:, 12] > 0, dtype=np.int32) - 1)
-                labels[:, 13] = np.array(x[:, 13] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 13] + pad[0]) + (
-                    np.array(x[:, 13] > 0, dtype=np.int32) - 1)
-                labels[:, 14] = np.array(x[:, 14] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 14] + pad[1]) + (
-                    np.array(x[:, 14] > 0, dtype=np.int32) - 1)
+                # labels[:, 5] = np.array(x[:, 5] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 5] + pad[0]) + (
+                #     np.array(x[:, 5] > 0, dtype=np.int32) - 1)
+                # labels[:, 6] = np.array(x[:, 6] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 6] + pad[1]) + (
+                #     np.array(x[:, 6] > 0, dtype=np.int32) - 1)
+                # labels[:, 7] = np.array(x[:, 7] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 7] + pad[0]) + (
+                #     np.array(x[:, 7] > 0, dtype=np.int32) - 1)
+                # labels[:, 8] = np.array(x[:, 8] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 8] + pad[1]) + (
+                #     np.array(x[:, 8] > 0, dtype=np.int32) - 1)
+                # labels[:, 9] = np.array(x[:, 5] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 9] + pad[0]) + (
+                #     np.array(x[:, 9] > 0, dtype=np.int32) - 1)
+                # labels[:, 10] = np.array(x[:, 5] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 10] + pad[1]) + (
+                #     np.array(x[:, 10] > 0, dtype=np.int32) - 1)
+                # labels[:, 11] = np.array(x[:, 11] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 11] + pad[0]) + (
+                #     np.array(x[:, 11] > 0, dtype=np.int32) - 1)
+                # labels[:, 12] = np.array(x[:, 12] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 12] + pad[1]) + (
+                #     np.array(x[:, 12] > 0, dtype=np.int32) - 1)
+                # labels[:, 13] = np.array(x[:, 13] > 0, dtype=np.int32) * (ratio[0] * w * x[:, 13] + pad[0]) + (
+                #     np.array(x[:, 13] > 0, dtype=np.int32) - 1)
+                # labels[:, 14] = np.array(x[:, 14] > 0, dtype=np.int32) * (ratio[1] * h * x[:, 14] + pad[1]) + (
+                #     np.array(x[:, 14] > 0, dtype=np.int32) - 1)
 
         if self.augment:
             # Augment imagespace
@@ -347,13 +351,14 @@ class LoadFaceImagesAndLabels(Dataset):  # for training/testing
         nL = len(labels)  # number of labels
         if nL:
             labels[:, 1:5] = xyxy2xywh(labels[:, 1:5])  # convert xyxy to xywh
+            labels[:, 5:9] = xyxy2xywh(labels[:, 1:5])
             labels[:, [2, 4]] /= img.shape[0]  # normalized height 0-1
             labels[:, [1, 3]] /= img.shape[1]  # normalized width 0-1
 
-            labels[:, [5, 7, 9, 11, 13]] /= img.shape[1]  # normalized landmark x 0-1
-            labels[:, [5, 7, 9, 11, 13]] = np.where(labels[:, [5, 7, 9, 11, 13]] < 0, -1, labels[:, [5, 7, 9, 11, 13]])
-            labels[:, [6, 8, 10, 12, 14]] /= img.shape[0]  # normalized landmark y 0-1
-            labels[:, [6, 8, 10, 12, 14]] = np.where(labels[:, [6, 8, 10, 12, 14]] < 0, -1, labels[:, [6, 8, 10, 12, 14]])
+            # labels[:, [5, 7, 9, 11, 13]] /= img.shape[1]  # normalized landmark x 0-1
+            # labels[:, [5, 7, 9, 11, 13]] = np.where(labels[:, [5, 7, 9, 11, 13]] < 0, -1, labels[:, [5, 7, 9, 11, 13]])
+            # labels[:, [6, 8, 10, 12, 14]] /= img.shape[0]  # normalized landmark y 0-1
+            # labels[:, [6, 8, 10, 12, 14]] = np.where(labels[:, [6, 8, 10, 12, 14]] < 0, -1, labels[:, [6, 8, 10, 12, 14]])
 
         if self.augment:
             # flip up-down
@@ -361,34 +366,35 @@ class LoadFaceImagesAndLabels(Dataset):  # for training/testing
                 img = np.flipud(img)
                 if nL:
                     labels[:, 2] = 1 - labels[:, 2]
-
-                    labels[:, 6] = np.where(labels[:,6] < 0, -1, 1 - labels[:, 6])
-                    labels[:, 8] = np.where(labels[:, 8] < 0, -1, 1 - labels[:, 8])
-                    labels[:, 10] = np.where(labels[:, 10] < 0, -1, 1 - labels[:, 10])
-                    labels[:, 12] = np.where(labels[:, 12] < 0, -1, 1 - labels[:, 12])
-                    labels[:, 14] = np.where(labels[:, 14] < 0, -1, 1 - labels[:, 14])
+                    labels[:, 6] = 1 - labels[:, 6]
+                    # labels[:, 6] = np.where(labels[:,6] < 0, -1, 1 - labels[:, 6])
+                    # labels[:, 8] = np.where(labels[:, 8] < 0, -1, 1 - labels[:, 8])
+                    # labels[:, 10] = np.where(labels[:, 10] < 0, -1, 1 - labels[:, 10])
+                    # labels[:, 12] = np.where(labels[:, 12] < 0, -1, 1 - labels[:, 12])
+                    # labels[:, 14] = np.where(labels[:, 14] < 0, -1, 1 - labels[:, 14])
 
             # flip left-right
             if random.random() < hyp['fliplr']:
                 img = np.fliplr(img)
                 if nL:
                     labels[:, 1] = 1 - labels[:, 1]
+                    labels[:, 5] = 1 - labels[:, 5]
 
-                    labels[:, 5] = np.where(labels[:, 5] < 0, -1, 1 - labels[:, 5])
-                    labels[:, 7] = np.where(labels[:, 7] < 0, -1, 1 - labels[:, 7])
-                    labels[:, 9] = np.where(labels[:, 9] < 0, -1, 1 - labels[:, 9])
-                    labels[:, 11] = np.where(labels[:, 11] < 0, -1, 1 - labels[:, 11])
-                    labels[:, 13] = np.where(labels[:, 13] < 0, -1, 1 - labels[:, 13])
+                    # labels[:, 5] = np.where(labels[:, 5] < 0, -1, 1 - labels[:, 5])
+                    # labels[:, 7] = np.where(labels[:, 7] < 0, -1, 1 - labels[:, 7])
+                    # labels[:, 9] = np.where(labels[:, 9] < 0, -1, 1 - labels[:, 9])
+                    # labels[:, 11] = np.where(labels[:, 11] < 0, -1, 1 - labels[:, 11])
+                    # labels[:, 13] = np.where(labels[:, 13] < 0, -1, 1 - labels[:, 13])
 
                     #左右镜像的时候，左眼、右眼，　左嘴角、右嘴角无法区分, 应该交换位置，便于网络学习
-                    eye_left = np.copy(labels[:, [5, 6]])
-                    mouth_left = np.copy(labels[:, [11, 12]])
-                    labels[:, [5, 6]] = labels[:, [7, 8]]
-                    labels[:, [7, 8]] = eye_left
-                    labels[:, [11, 12]] = labels[:, [13, 14]]
-                    labels[:, [13, 14]] = mouth_left
+                    # eye_left = np.copy(labels[:, [5, 6]])
+                    # mouth_left = np.copy(labels[:, [11, 12]])
+                    # labels[:, [5, 6]] = labels[:, [7, 8]]
+                    # labels[:, [7, 8]] = eye_left
+                    # labels[:, [11, 12]] = labels[:, [13, 14]]
+                    # labels[:, [13, 14]] = mouth_left
 
-        labels_out = torch.zeros((nL, 16))
+        labels_out = torch.zeros((nL, 10))
         if nL:
             labels_out[:, 1:] = torch.from_numpy(labels)
             #showlabels(img, labels[:, 1:5], labels[:, 5:15])
@@ -461,45 +467,19 @@ def load_mosaic_face(self, index):
             labels[:, 2] = h * (x[:, 2] - x[:, 4] / 2) + padh
             labels[:, 3] = w * (x[:, 1] + x[:, 3] / 2) + padw
             labels[:, 4] = h * (x[:, 2] + x[:, 4] / 2) + padh
-            #10 landmarks
-
-            labels[:, 5] = np.array(x[:, 5] > 0, dtype=np.int32) * (w * x[:, 5] + padw) + (np.array(x[:, 5] > 0, dtype=np.int32) - 1)
-            labels[:, 6] = np.array(x[:, 6] > 0, dtype=np.int32) * (h * x[:, 6] + padh) + (np.array(x[:, 6] > 0, dtype=np.int32) - 1)
-            labels[:, 7] = np.array(x[:, 7] > 0, dtype=np.int32) * (w * x[:, 7] + padw) + (np.array(x[:, 7] > 0, dtype=np.int32) - 1)
-            labels[:, 8] = np.array(x[:, 8] > 0, dtype=np.int32) * (h * x[:, 8] + padh) + (np.array(x[:, 8] > 0, dtype=np.int32) - 1)
-            labels[:, 9] = np.array(x[:, 9] > 0, dtype=np.int32) * (w * x[:, 9] + padw) + (np.array(x[:, 9] > 0, dtype=np.int32) - 1)
-            labels[:, 10] = np.array(x[:, 10] > 0, dtype=np.int32) * (h * x[:, 10] + padh) + (np.array(x[:, 10] > 0, dtype=np.int32) - 1)
-            labels[:, 11] = np.array(x[:, 11] > 0, dtype=np.int32) * (w * x[:, 11] + padw) + (np.array(x[:, 11] > 0, dtype=np.int32) - 1)
-            labels[:, 12] = np.array(x[:, 12] > 0, dtype=np.int32) * (h * x[:, 12] + padh) + (np.array(x[:, 12] > 0, dtype=np.int32) - 1)
-            labels[:, 13] = np.array(x[:, 13] > 0, dtype=np.int32) * (w * x[:, 13] + padw) + (np.array(x[:, 13] > 0, dtype=np.int32) - 1)
-            labels[:, 14] = np.array(x[:, 14] > 0, dtype=np.int32) * (h * x[:, 14] + padh) + (np.array(x[:, 14] > 0, dtype=np.int32) - 1)
+            #second bbox
+            labels[:, 5] = w * (x[:, 1] - x[:, 3] / 2) + padw
+            labels[:, 6] = h * (x[:, 2] - x[:, 4] / 2) + padh
+            labels[:, 7] = w * (x[:, 1] + x[:, 3] / 2) + padw
+            labels[:, 8] = h * (x[:, 2] + x[:, 4] / 2) + padh
         labels4.append(labels)
 
     # Concat/clip labels
     if len(labels4):
         labels4 = np.concatenate(labels4, 0)
-        np.clip(labels4[:, 1:5], 0, 2 * s, out=labels4[:, 1:5])  # use with random_perspective
+        np.clip(labels4[:, 1:9], 0, 2 * s, out=labels4[:, 1:9])  # use with random_perspective
         # img4, labels4 = replicate(img4, labels4)  # replicate
-
-        #landmarks
-        labels4[:, 5:] = np.where(labels4[:, 5:] < 0, -1, labels4[:, 5:])
-        labels4[:, 5:] = np.where(labels4[:, 5:] > 2 * s, -1, labels4[:, 5:])
-
-        labels4[:, 5] = np.where(labels4[:, 6] == -1, -1, labels4[:, 5])
-        labels4[:, 6] = np.where(labels4[:, 5] == -1, -1, labels4[:, 6])
-
-        labels4[:, 7] = np.where(labels4[:, 8] == -1, -1, labels4[:, 7])
-        labels4[:, 8] = np.where(labels4[:, 7] == -1, -1, labels4[:, 8])
-
-        labels4[:, 9] = np.where(labels4[:, 10] == -1, -1, labels4[:, 9])
-        labels4[:, 10] = np.where(labels4[:, 9] == -1, -1, labels4[:, 10])
-
-        labels4[:, 11] = np.where(labels4[:, 12] == -1, -1, labels4[:, 11])
-        labels4[:, 12] = np.where(labels4[:, 11] == -1, -1, labels4[:, 12])
-
-        labels4[:, 13] = np.where(labels4[:, 14] == -1, -1, labels4[:, 13])
-        labels4[:, 14] = np.where(labels4[:, 13] == -1, -1, labels4[:, 14])
-
+        # np.clip(labels4[:, 5:9], 0, 2 * s, out=labels4[:, 5:9])
     # Augment
     img4, labels4 = random_perspective(img4, labels4,
                                        degrees=self.hyp['degrees'],
@@ -601,6 +581,7 @@ def random_perspective(img, targets=(), degrees=10, translate=.1, scale=.1, shea
     # torchvision.transforms.RandomAffine(degrees=(-10, 10), translate=(.1, .1), scale=(.9, 1.1), shear=(-10, 10))
     # targets = [cls, xyxy]
 
+    print(targets)
     height = img.shape[0] + border[0] * 2  # shape(h,w,c)
     width = img.shape[1] + border[1] * 2
 
@@ -651,43 +632,43 @@ def random_perspective(img, targets=(), degrees=10, translate=.1, scale=.1, shea
     if n:
         # warp points
         #xy = np.ones((n * 4, 3))
-        xy = np.ones((n * 9, 3))
-        xy[:, :2] = targets[:, [1, 2, 3, 4, 1, 4, 3, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]].reshape(n * 9, 2)  # x1y1, x2y2, x1y2, x2y1
+        xy = np.ones((n * 4, 3))
+        xy[:, :2] = targets[:, [1, 2, 3, 4, 1, 4, 3, 2]].reshape(n * 4, 2)  # x1y1, x2y2, x1y2, x2y1
         xy = xy @ M.T  # transform
         if perspective:
-            xy = (xy[:, :2] / xy[:, 2:3]).reshape(n, 18)  # rescale
+            xy = (xy[:, :2] / xy[:, 2:3])  # rescale
         else:  # affine
-            xy = xy[:, :2].reshape(n, 18)
+            xy = xy[:, :2]
 
         # create new boxes
         x = xy[:, [0, 2, 4, 6]]
         y = xy[:, [1, 3, 5, 7]]
 
-        landmarks = xy[:, [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]]
-        mask = np.array(targets[:, 5:] > 0, dtype=np.int32)
-        landmarks = landmarks * mask
-        landmarks = landmarks + mask - 1
+        # landmarks = xy[:, [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]]
+        # mask = np.array(targets[:, 5:] > 0, dtype=np.int32)
+        # landmarks = landmarks * mask
+        # landmarks = landmarks + mask - 1
 
-        landmarks = np.where(landmarks < 0, -1, landmarks)
-        landmarks[:, [0, 2, 4, 6, 8]] = np.where(landmarks[:, [0, 2, 4, 6, 8]] > width, -1, landmarks[:, [0, 2, 4, 6, 8]])
-        landmarks[:, [1, 3, 5, 7, 9]] = np.where(landmarks[:, [1, 3, 5, 7, 9]] > height, -1,landmarks[:, [1, 3, 5, 7, 9]])
+        # landmarks = np.where(landmarks < 0, -1, landmarks)
+        # landmarks[:, [0, 2, 4, 6, 8]] = np.where(landmarks[:, [0, 2, 4, 6, 8]] > width, -1, landmarks[:, [0, 2, 4, 6, 8]])
+        # landmarks[:, [1, 3, 5, 7, 9]] = np.where(landmarks[:, [1, 3, 5, 7, 9]] > height, -1,landmarks[:, [1, 3, 5, 7, 9]])
 
-        landmarks[:, 0] = np.where(landmarks[:, 1] == -1, -1, landmarks[:, 0])
-        landmarks[:, 1] = np.where(landmarks[:, 0] == -1, -1, landmarks[:, 1])
+        # landmarks[:, 0] = np.where(landmarks[:, 1] == -1, -1, landmarks[:, 0])
+        # landmarks[:, 1] = np.where(landmarks[:, 0] == -1, -1, landmarks[:, 1])
 
-        landmarks[:, 2] = np.where(landmarks[:, 3] == -1, -1, landmarks[:, 2])
-        landmarks[:, 3] = np.where(landmarks[:, 2] == -1, -1, landmarks[:, 3])
+        # landmarks[:, 2] = np.where(landmarks[:, 3] == -1, -1, landmarks[:, 2])
+        # landmarks[:, 3] = np.where(landmarks[:, 2] == -1, -1, landmarks[:, 3])
 
-        landmarks[:, 4] = np.where(landmarks[:, 5] == -1, -1, landmarks[:, 4])
-        landmarks[:, 5] = np.where(landmarks[:, 4] == -1, -1, landmarks[:, 5])
+        # landmarks[:, 4] = np.where(landmarks[:, 5] == -1, -1, landmarks[:, 4])
+        # landmarks[:, 5] = np.where(landmarks[:, 4] == -1, -1, landmarks[:, 5])
 
-        landmarks[:, 6] = np.where(landmarks[:, 7] == -1, -1, landmarks[:, 6])
-        landmarks[:, 7] = np.where(landmarks[:, 6] == -1, -1, landmarks[:, 7])
+        # landmarks[:, 6] = np.where(landmarks[:, 7] == -1, -1, landmarks[:, 6])
+        # landmarks[:, 7] = np.where(landmarks[:, 6] == -1, -1, landmarks[:, 7])
 
-        landmarks[:, 8] = np.where(landmarks[:, 9] == -1, -1, landmarks[:, 8])
-        landmarks[:, 9] = np.where(landmarks[:, 8] == -1, -1, landmarks[:, 9])
+        # landmarks[:, 8] = np.where(landmarks[:, 9] == -1, -1, landmarks[:, 8])
+        # landmarks[:, 9] = np.where(landmarks[:, 8] == -1, -1, landmarks[:, 9])
 
-        targets[:,5:] = landmarks
+        # targets[:,5:] = landmarks
 
         xy = np.concatenate((x.min(1), y.min(1), x.max(1), y.max(1))).reshape(4, n).T
 
