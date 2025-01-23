@@ -204,7 +204,7 @@ def build_targets(p, targets, model):
     tcls, tbox, indices, anch, tbox1 = [], [], [], [], []
     tbox1 = []
     #gain = torch.ones(7, device=targets.device)  # normalized to gridspace gain
-    gain = torch.ones(17, device=targets.device)
+    gain = torch.ones(11, device=targets.device)
     ai = torch.arange(na, device=targets.device).float().view(na, 1).repeat(1, nt)  # same as .repeat_interleave(nt)
     targets = torch.cat((targets.repeat(na, 1, 1), ai[:, :, None]), 2)  # append anchor indices
 
@@ -255,7 +255,9 @@ def build_targets(p, targets, model):
 
         # Append
         a = t[:, 10].long()  # anchor indices
-        indices.append((b, a, gj.clamp_(0, gain[3] - 1), gi.clamp_(0, gain[2] - 1)))  # image, anchor, grid indices
+        indices.append((b, a, torch.clamp(gj, 0, gain[3] - 1).long(), torch.clamp(gi, 0, gain[2] - 1).long()))
+
+        # indices.append((b, a, gj.clamp_(0, gain[3] - 1).long(), gi.clamp_(0, gain[2] - 1).long()))  # image, anchor, grid indices
         tbox.append(torch.cat((gxy - gij, gwh), 1))  # box
         tbox1.append(torch.cat((gxy1 - gij1, gwh1), 1))  # box 2
 

@@ -581,7 +581,7 @@ def random_perspective(img, targets=(), degrees=10, translate=.1, scale=.1, shea
     # torchvision.transforms.RandomAffine(degrees=(-10, 10), translate=(.1, .1), scale=(.9, 1.1), shear=(-10, 10))
     # targets = [cls, xyxy]
 
-    print(targets)
+    # print(targets)
     height = img.shape[0] + border[0] * 2  # shape(h,w,c)
     width = img.shape[1] + border[1] * 2
 
@@ -635,10 +635,12 @@ def random_perspective(img, targets=(), degrees=10, translate=.1, scale=.1, shea
         xy = np.ones((n * 4, 3))
         xy[:, :2] = targets[:, [1, 2, 3, 4, 1, 4, 3, 2]].reshape(n * 4, 2)  # x1y1, x2y2, x1y2, x2y1
         xy = xy @ M.T  # transform
+
+        # print(xy)
         if perspective:
-            xy = (xy[:, :2] / xy[:, 2:3])  # rescale
+            xy = (xy[:, :2] / xy[:, 2:3]).reshape(n,8)  # rescale
         else:  # affine
-            xy = xy[:, :2]
+            xy = xy[:, :2].reshape(n,8)
 
         # create new boxes
         x = xy[:, [0, 2, 4, 6]]
