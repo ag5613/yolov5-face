@@ -1,4 +1,7 @@
 */__pycache__
-.DS_Store
+.DS_Store 
 */dataset
 dataset/*
+training_dataset/train.zip
+training_dataset/train_final/
+training_dataset/widerface/
